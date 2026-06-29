@@ -149,6 +149,8 @@ ALTER TABLE places ADD COLUMN IF NOT EXISTS age_at_visit_months integer;
 INSERT INTO otis_settings (key, value) VALUES ('dob', '2024-12-17') ON CONFLICT (key) DO NOTHING;
 INSERT INTO otis_settings (key, value) VALUES ('home_lat', '54.7160') ON CONFLICT (key) DO NOTHING;
 INSERT INTO otis_settings (key, value) VALUES ('home_lng', '-5.8093') ON CONFLICT (key) DO NOTHING;
+INSERT INTO otis_settings (key, value) VALUES ('home_location', 'Northern Ireland') ON CONFLICT (key) DO NOTHING;
+INSERT INTO otis_settings (key, value) VALUES ('home_timezone', 'Europe/London') ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO firsts_categories (name, emoji)
 SELECT v.name, v.emoji FROM (VALUES

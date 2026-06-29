@@ -116,7 +116,15 @@ function MemberCard({
   );
 }
 
-function OtisCard({ age }: { age: string }) {
+function OtisCard({
+  age,
+  location,
+  timezone,
+}: {
+  age: string;
+  location: string;
+  timezone: string;
+}) {
   return (
     <article
       className="scrapbook-card relative p-6 transition-all duration-300 hover:z-10 hover:scale-[1.02] hover:rotate-0 md:scale-105"
@@ -130,8 +138,8 @@ function OtisCard({ age }: { age: string }) {
         <span className="text-5xl">👶</span>
         <h3 className="mt-3 font-caveat text-3xl font-bold text-navy">Otis</h3>
         <p className="font-caveat text-sm text-navy/60">{age}</p>
-        <p className="mt-2 font-caveat text-lg text-green">🍀 Northern Ireland</p>
-        <LiveClock timezone="Europe/London" />
+        <p className="mt-2 font-caveat text-lg text-green">🍀 {location}</p>
+        <LiveClock timezone={timezone} />
       </div>
     </article>
   );
@@ -329,7 +337,12 @@ export default function WhereIsEveryone() {
   const { getAge, dob } = useOtis();
   const currentAge = dob ? getAge(new Date().toISOString().split("T")[0]) : "Our little star";
   const [locations, setLocations] = useState<FamilyLocation[]>([]);
-  const [home, setHome] = useState<{ lat: number; lng: number } | null>(null);
+  const [home, setHome] = useState<{
+    lat: number;
+    lng: number;
+    location: string;
+    timezone: string;
+  } | null>(null);
   const [view, setView] = useState<ViewMode>("cards");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -345,7 +358,14 @@ export default function WhereIsEveryone() {
         const settings = await settingsRes.json();
         const lat = parseFloat(settings.home_lat);
         const lng = parseFloat(settings.home_lng);
-        if (!isNaN(lat) && !isNaN(lng)) setHome({ lat, lng });
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setHome({
+            lat,
+            lng,
+            location: settings.home_location?.trim() || "Home",
+            timezone: settings.home_timezone?.trim() || "Europe/London",
+          });
+        }
       }
     } catch {
       /* ignore */
@@ -416,7 +436,11 @@ export default function WhereIsEveryone() {
         <WhereMapInner locations={locations} home={home} />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <OtisCard age={currentAge} />
+          <OtisCard
+            age={currentAge}
+            location={home?.location ?? "Home"}
+            timezone={home?.timezone ?? "Europe/London"}
+          />
           {locations.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}

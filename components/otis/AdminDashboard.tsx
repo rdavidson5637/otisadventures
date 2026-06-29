@@ -111,8 +111,8 @@ export default function AdminDashboard() {
       <section className="scrapbook-card relative p-6">
         <div className="washi-tape left-1/2 -translate-x-1/2" style={{ background: "rgba(74, 124, 89, 0.45)" }} />
         <h2 className="font-caveat text-3xl font-bold text-navy">Otis Settings 👶</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <div className="block">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="block sm:col-span-2">
             <span className="font-caveat text-sm text-navy/70">Date of birth</span>
             <p className="mt-1 rounded border border-kraft bg-cream/60 px-3 py-2 font-caveat text-lg text-navy">
               17 December 2024
@@ -121,6 +121,16 @@ export default function AdminDashboard() {
               Fixed in code ({OTIS_DOB})
             </p>
           </div>
+          <label className="block sm:col-span-2">
+            <span className="font-caveat text-sm text-navy/70">Otis&apos; home location</span>
+            <input
+              type="text"
+              value={settings.home_location ?? ""}
+              onChange={(e) => saveSetting("home_location", e.target.value)}
+              placeholder="e.g. Grand Cayman"
+              className="mt-1 w-full rounded border border-kraft bg-cream px-3 py-2 font-caveat"
+            />
+          </label>
           <label className="block">
             <span className="font-caveat text-sm text-navy/70">Home latitude</span>
             <input
@@ -139,6 +149,16 @@ export default function AdminDashboard() {
               value={settings.home_lng ?? ""}
               onChange={(e) => saveSetting("home_lng", e.target.value)}
               className="mt-1 w-full rounded border border-kraft bg-cream px-3 py-2 font-nunito"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="font-caveat text-sm text-navy/70">Home timezone</span>
+            <input
+              type="text"
+              value={settings.home_timezone ?? ""}
+              onChange={(e) => saveSetting("home_timezone", e.target.value)}
+              placeholder="e.g. America/Cayman or Europe/London"
+              className="mt-1 w-full rounded border border-kraft bg-cream px-3 py-2 font-caveat"
             />
           </label>
         </div>

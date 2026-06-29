@@ -59,7 +59,7 @@ function LiveTime({ timezone }: { timezone: string }) {
 
 interface WhereMapInnerProps {
   locations: FamilyLocation[];
-  home: { lat: number; lng: number } | null;
+  home: { lat: number; lng: number; location?: string; timezone?: string } | null;
 }
 
 export default function WhereMapInner({ locations, home }: WhereMapInnerProps) {
@@ -86,7 +86,18 @@ export default function WhereMapInner({ locations, home }: WhereMapInnerProps) {
         {home && (
           <Marker position={[home.lat, home.lng]} icon={homeIcon}>
             <Popup>
-              <p className="font-caveat text-lg font-bold text-navy">Otis&apos; home 🏠</p>
+              <p className="font-caveat text-lg font-bold text-navy">Otis</p>
+              {home.location && (
+                <p className="font-caveat text-sm text-green">🍀 {home.location}</p>
+              )}
+              {home.timezone && (
+                <>
+                  <LiveTime timezone={home.timezone} />
+                  <p className="font-caveat text-xs text-navy/40">
+                    {getTimezoneCityLabel(home.timezone)}
+                  </p>
+                </>
+              )}
             </Popup>
           </Marker>
         )}

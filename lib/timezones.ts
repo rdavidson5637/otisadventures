@@ -1,4 +1,5 @@
 export const TIMEZONE_OPTIONS = [
+  { value: "America/Cayman", label: "Grand Cayman (EST)" },
   { value: "Europe/London", label: "London (GMT/BST)" },
   { value: "Europe/Dublin", label: "Dublin (GMT/IST)" },
   { value: "Europe/Paris", label: "Paris (CET)" },
