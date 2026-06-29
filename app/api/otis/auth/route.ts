@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     const response = jsonOk({ success: true, adminName: admin.name });
-    response.cookies.set(ADMIN_SESSION_COOKIE, "true", adminSessionCookieOptions);
+    response.cookies.set(ADMIN_SESSION_COOKIE, admin.name, adminSessionCookieOptions);
     return response;
   } catch {
     return jsonError("Authentication failed");

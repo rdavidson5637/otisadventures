@@ -74,6 +74,12 @@ export async function getFamilySessionFromRequest(
   return verifyFamilyToken(token);
 }
 
+export function getAdminNameFromRequest(request: Request): string | null {
+  const value = getCookieValue(request, ADMIN_SESSION_COOKIE);
+  if (!value || value === "true") return null;
+  return value;
+}
+
 export function isAdminSessionFromRequest(request: Request): boolean {
-  return getCookieValue(request, ADMIN_SESSION_COOKIE) === "true";
+  return !!getCookieValue(request, ADMIN_SESSION_COOKIE);
 }

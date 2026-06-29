@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminDashboard from "@/components/otis/AdminDashboard";
+import { useRefreshAdminSession } from "@/components/otis/AdminGate";
 
 export default function AdminPage() {
   const router = useRouter();
+  const refreshAdminSession = useRefreshAdminSession();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedName, setSelectedName] = useState<"Dad" | "Mum" | null>(null);
@@ -16,9 +18,11 @@ export default function AdminPage() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const admin = sessionStorage.getItem("otis_admin") === "true";
-    setIsLoggedIn(admin);
-    setChecking(false);
+    fetch("/api/otis/auth/me", { credentials: "same-origin" })
+      .then((res) => res.json())
+      .then((data) => setIsLoggedIn(!!data.isAdmin))
+      .catch(() => setIsLoggedIn(false))
+      .finally(() => setChecking(false));
   }, []);
 
   function selectAdmin(name: "Dad" | "Mum", user: string) {
@@ -37,14 +41,15 @@ export default function AdminPage() {
       const res = await fetch("/api/otis/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
 
-      if (data.success) {
-        sessionStorage.setItem("otis_admin", "true");
-        sessionStorage.setItem("otis_admin_name", data.adminName);
+      if (res.ok && data.success) {
+        await refreshAdminSession();
         setIsLoggedIn(true);
+        router.refresh();
       } else {
         setError(true);
         setShake(true);

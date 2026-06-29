@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!familySession?.value && adminSession?.value !== "true") {
+  if (!familySession?.value && !adminSession?.value) {
     return NextResponse.redirect(new URL("/otis/login", request.url));
   }
 

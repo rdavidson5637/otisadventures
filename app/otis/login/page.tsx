@@ -1,38 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function FamilyLoginPage() {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError(false);
+    setError(null);
 
     try {
       const res = await fetch("/api/otis/family/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ username: username.trim(), password }),
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push("/otis");
-      } else {
-        setError(true);
-        setShake(true);
-        setTimeout(() => setShake(false), 400);
+        window.location.href = "/otis";
+        return;
       }
+
+      setError(
+        data.message ??
+          (res.status >= 500
+            ? "Something went wrong on our end — try again in a moment"
+            : "Hmm, that doesn't look right! Check your username and password 🙈")
+      );
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
     } catch {
-      setError(true);
+      setError("Could not reach the server — check your connection and try again");
       setShake(true);
       setTimeout(() => setShake(false), 400);
     } finally {
@@ -81,10 +86,7 @@ export default function FamilyLoginPage() {
         />
 
         {error && (
-          <p className="mt-3 font-caveat text-lg text-coral">
-            Hmm, that doesn&apos;t look right! Use your <strong>username</strong> (not display
-            name) and check the password 🙈
-          </p>
+          <p className="mt-3 font-caveat text-lg text-coral">{error}</p>
         )}
 
         <button
@@ -96,8 +98,12 @@ export default function FamilyLoginPage() {
         </button>
 
         <p className="mt-4 font-caveat text-sm text-navy/50">
-          Log in with your username — e.g. <strong>dad</strong>, not your display name. Ask Dad or
-          Mum if unsure 😊
+          Family login — username e.g. <strong>dad</strong>, <strong>granny</strong>, or{" "}
+          <strong>Mum</strong>. This is separate from the{" "}
+          <a href="/otis/admin" className="text-coral underline-offset-2 hover:underline">
+            admin dashboard
+          </a>
+          .
         </p>
       </form>
     </main>

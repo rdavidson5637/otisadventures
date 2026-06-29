@@ -38,7 +38,27 @@ export default function FamilyHeader() {
     router.push("/otis/login");
   }
 
-  if (isAdmin || loading || !member) return null;
+  if (loading) return null;
+
+  if (isAdmin) {
+    return (
+      <header className="border-b border-kraft/60 bg-cream px-4 py-2">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
+          <p className="truncate font-caveat text-lg text-navy sm:text-xl">
+            🔑 Admin mode — browse the scrapbook freely
+          </p>
+          <a
+            href="/otis/admin"
+            className="shrink-0 font-nunito text-sm text-navy/60 underline-offset-2 hover:text-navy hover:underline"
+          >
+            Dashboard
+          </a>
+        </div>
+      </header>
+    );
+  }
+
+  if (!member) return null;
 
   return (
     <header className="border-b border-kraft/60 bg-cream px-4 py-2">
