@@ -8,6 +8,18 @@ import "leaflet/dist/leaflet.css";
 import { spreadMapMarkers } from "@/lib/spread-map-markers";
 import type { FamilyMember } from "@/types/otis";
 
+type HomePoint = { lat: number; lng: number };
+
+type MapPoint =
+  | { kind: "otis"; id: "otis"; lat: number; lng: number }
+  | {
+      kind: "member";
+      id: string;
+      lat: number;
+      lng: number;
+      member: FamilyMember & { lat: number; lng: number };
+    };
+
 function createMemberIcon(member: FamilyMember) {
   const initials = member.display_name
     .split(" ")
@@ -35,9 +47,17 @@ const homeIcon = L.divIcon({
   iconAnchor: [24, 24],
 });
 
+function coordsMatch(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number },
+  epsilon = 0.02
+) {
+  return Math.abs(a.lat - b.lat) < epsilon && Math.abs(a.lng - b.lng) < epsilon;
+}
+
 export default function FamilyMapInner() {
   const [members, setMembers] = useState<FamilyMember[]>([]);
-  const [home, setHome] = useState<{ lat: number; lng: number } | null>(null);
+  const [home, setHome] = useState<HomePoint | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -51,20 +71,37 @@ export default function FamilyMapInner() {
     });
   }, []);
 
-  const mappable = useMemo(() => {
-    const withCoords = members.filter(
-      (m): m is FamilyMember & { lat: number; lng: number } =>
-        m.lat != null && m.lng != null
-    );
-    return spreadMapMarkers(withCoords);
-  }, [members]);
+  const spreadPoints = useMemo(() => {
+    const raw: MapPoint[] = [];
+
+    if (home) {
+      raw.push({ kind: "otis", id: "otis", lat: home.lat, lng: home.lng });
+    }
+
+    for (const member of members) {
+      if (member.lat == null || member.lng == null) continue;
+      raw.push({
+        kind: "member",
+        id: member.id,
+        lat: member.lat,
+        lng: member.lng,
+        member: member as FamilyMember & { lat: number; lng: number },
+      });
+    }
+
+    return spreadMapMarkers(raw);
+  }, [members, home]);
+
+  const memberPoints = spreadPoints.filter(
+    (p): p is (typeof spreadPoints)[number] & { kind: "member" } => p.kind === "member"
+  );
 
   const stats = useMemo(() => {
-    const locations = new Set(mappable.map((m) => m.location).filter(Boolean));
-    return { cities: locations.size, members: mappable.length };
-  }, [mappable]);
+    const locations = new Set(memberPoints.map((m) => m.member.location).filter(Boolean));
+    return { cities: locations.size, members: memberPoints.length };
+  }, [memberPoints]);
 
-  if (!mappable.length && !home) {
+  if (!spreadPoints.length) {
     return (
       <p className="font-caveat text-xl text-navy/60">
         Add family member coordinates in admin to see the map 🗺️
@@ -72,7 +109,7 @@ export default function FamilyMapInner() {
     );
   }
 
-  const center = home ?? { lat: mappable[0]!.lat, lng: mappable[0]!.lng };
+  const center = home ?? { lat: spreadPoints[0]!.lat, lng: spreadPoints[0]!.lng };
 
   return (
     <div>
@@ -82,53 +119,56 @@ export default function FamilyMapInner() {
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {home && (
-            <Marker position={[home.lat, home.lng]} icon={homeIcon}>
-              <Popup>
-                <p className="font-caveat text-lg font-bold text-navy">
-                  This is where Otis lives! 🏠
-                </p>
-              </Popup>
-            </Marker>
+          {spreadPoints.map((point) =>
+            point.kind === "otis" ? (
+              <Marker key="otis" position={[point.mapLat, point.mapLng]} icon={homeIcon}>
+                <Popup>
+                  <p className="font-caveat text-lg font-bold text-navy">
+                    This is where Otis lives! 🏠
+                  </p>
+                </Popup>
+              </Marker>
+            ) : (
+              <Marker
+                key={point.member.id}
+                position={[point.mapLat, point.mapLng]}
+                icon={createMemberIcon(point.member)}
+              >
+                <Popup>
+                  <p className="font-caveat text-lg font-bold text-navy">
+                    {point.member.display_name}
+                  </p>
+                  {point.member.relationship && (
+                    <p className="font-nunito text-xs text-navy/60">{point.member.relationship}</p>
+                  )}
+                  {point.member.location && (
+                    <p className="font-nunito text-xs text-navy/60">📍 {point.member.location}</p>
+                  )}
+                  <p className="font-nunito text-xs text-navy/40">
+                    Joined {format(parseISO(point.member.created_at), "MMMM yyyy")}
+                  </p>
+                </Popup>
+              </Marker>
+            )
           )}
-          {mappable.map((member) => (
-            <Marker
-              key={member.id}
-              position={[member.mapLat, member.mapLng]}
-              icon={createMemberIcon(member)}
-            >
-              <Popup>
-                <p className="font-caveat text-lg font-bold text-navy">
-                  {member.display_name}
-                </p>
-                {member.relationship && (
-                  <p className="font-nunito text-xs text-navy/60">{member.relationship}</p>
-                )}
-                {member.location && (
-                  <p className="font-nunito text-xs text-navy/60">📍 {member.location}</p>
-                )}
-                <p className="font-nunito text-xs text-navy/40">
-                  Joined {format(parseISO(member.created_at), "MMMM yyyy")}
-                </p>
-              </Popup>
-            </Marker>
-          ))}
           {home &&
-            mappable.map((member) => (
-              <Polyline
-                key={`line-${member.id}`}
-                positions={[
-                  [member.lat, member.lng],
-                  [home.lat, home.lng],
-                ]}
-                pathOptions={{
-                  color: "#1E2D4A",
-                  opacity: 0.2,
-                  weight: 2,
-                  dashArray: "8 8",
-                }}
-              />
-            ))}
+            memberPoints
+              .filter((point) => !coordsMatch(point, home))
+              .map((point) => (
+                <Polyline
+                  key={`line-${point.member.id}`}
+                  positions={[
+                    [point.lat, point.lng],
+                    [home.lat, home.lng],
+                  ]}
+                  pathOptions={{
+                    color: "#1E2D4A",
+                    opacity: 0.2,
+                    weight: 2,
+                    dashArray: "8 8",
+                  }}
+                />
+              ))}
         </MapContainer>
       </div>
       <p className="mt-4 text-center font-caveat text-xl text-navy/80">
