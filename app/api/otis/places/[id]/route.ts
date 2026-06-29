@@ -1,5 +1,6 @@
 import { logAdminActivity } from "@/lib/activity-log";
 import { getAgeAtVisitMonths } from "@/lib/otis-age";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import { jsonError, jsonOk, parseBody } from "@/lib/api-utils";
 import { supabaseAdmin } from "@/lib/supabase";
 
@@ -37,18 +38,10 @@ export async function PATCH(
     }
 
     if (body.visited === true && body.visited_date) {
-      const { data: settings } = await supabaseAdmin
-        .from("otis_settings")
-        .select("value")
-        .eq("key", "dob")
-        .maybeSingle();
-
-      if (settings?.value) {
-        updates.age_at_visit_months = getAgeAtVisitMonths(
-          settings.value,
-          body.visited_date as string
-        );
-      }
+      updates.age_at_visit_months = getAgeAtVisitMonths(
+        OTIS_DOB,
+        body.visited_date as string
+      );
     }
 
     if (Object.keys(updates).length === 0) {

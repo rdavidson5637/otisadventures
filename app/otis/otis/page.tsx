@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import type { FirstsCategory, GrowthEntry, OtisFirstWithCategory } from "@/types/otis";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import OtisPageClient from "@/components/otis/OtisPageClient";
+import type { FirstsCategory, GrowthEntry, OtisFirstWithCategory } from "@/types/otis";
 
 async function getInitialData() {
   const [growthRes, settingsRes, firstsRes, categoriesRes] = await Promise.all([
@@ -26,7 +27,7 @@ async function getInitialData() {
 
   return {
     growthEntries: (growthRes.data ?? []) as GrowthEntry[],
-    dob: settings.dob ?? "",
+    dob: OTIS_DOB,
     firsts,
     categories: (categoriesRes.data ?? []) as FirstsCategory[],
   };

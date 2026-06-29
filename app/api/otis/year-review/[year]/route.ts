@@ -2,6 +2,7 @@ import { differenceInMonths, parseISO } from "date-fns";
 import { jsonError, jsonOk, parseBody } from "@/lib/api-utils";
 import { isAdminSessionFromRequest } from "@/lib/family-auth";
 import { haversineDistance } from "@/lib/haversine";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
 
 export async function GET(
@@ -137,14 +138,12 @@ export async function GET(
     for (const row of settingsRes.data ?? []) {
       settings[row.key] = row.value;
     }
-    const dob = settings.dob ?? "";
+    const dob = OTIS_DOB;
 
     let ageAtStart = "";
     let ageAtEnd = "";
-    if (dob) {
-      ageAtStart = `${differenceInMonths(parseISO(yearStart), parseISO(dob))} months`;
-      ageAtEnd = `${differenceInMonths(parseISO(yearEnd), parseISO(dob))} months`;
-    }
+    ageAtStart = `${differenceInMonths(parseISO(yearStart), parseISO(dob))} months`;
+    ageAtEnd = `${differenceInMonths(parseISO(yearEnd), parseISO(dob))} months`;
 
     const growthInYear = (growthRes.data ?? []).filter(
       (g) => g.measured_date >= yearStart && g.measured_date <= yearEnd

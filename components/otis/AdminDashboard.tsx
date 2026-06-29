@@ -7,6 +7,7 @@ import type { CapsuleLetter, FamilyMember, FeedEventType, FeedPost, TimeCapsule,
 import ActivityLog from "./ActivityLog";
 import { useAdminName } from "./AdminGate";
 import { showToast } from "./Toast";
+import { OTIS_DOB } from "@/lib/otis-constants";
 
 type StorageStats = {
   photoMb: number;
@@ -111,15 +112,15 @@ export default function AdminDashboard() {
         <div className="washi-tape left-1/2 -translate-x-1/2" style={{ background: "rgba(74, 124, 89, 0.45)" }} />
         <h2 className="font-caveat text-3xl font-bold text-navy">Otis Settings 👶</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <label className="block">
+          <div className="block">
             <span className="font-caveat text-sm text-navy/70">Date of birth</span>
-            <input
-              type="date"
-              value={settings.dob ?? ""}
-              onChange={(e) => saveSetting("dob", e.target.value)}
-              className="mt-1 w-full rounded border border-kraft bg-cream px-3 py-2 font-nunito"
-            />
-          </label>
+            <p className="mt-1 rounded border border-kraft bg-cream/60 px-3 py-2 font-caveat text-lg text-navy">
+              17 December 2024
+            </p>
+            <p className="mt-1 font-caveat text-xs text-navy/40">
+              Fixed in code ({OTIS_DOB})
+            </p>
+          </div>
           <label className="block">
             <span className="font-caveat text-sm text-navy/70">Home latitude</span>
             <input

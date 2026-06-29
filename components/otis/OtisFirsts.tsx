@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { calculateAge } from "@/lib/age-utils";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import { getRotation } from "@/lib/otis-utils";
 import type { FirstsCategory, OtisFirstWithCategory } from "@/types/otis";
 import { AdminOnly, useIsAdmin } from "./AdminGate";
@@ -23,7 +24,7 @@ export default function OtisFirsts({
   const isAdmin = useIsAdmin();
   const [firsts, setFirsts] = useState<OtisFirstWithCategory[]>(initialFirsts);
   const [categories, setCategories] = useState<FirstsCategory[]>(initialCategories);
-  const [dob, setDob] = useState(initialDob ?? "");
+  const [dob] = useState(initialDob ?? OTIS_DOB);
   const [filter, setFilter] = useState<string>("all");
   const [showModal, setShowModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -41,15 +42,6 @@ export default function OtisFirsts({
       /* ignore */
     }
   }, []);
-
-  useEffect(() => {
-    if (!initialDob) {
-      fetch("/api/otis/settings")
-        .then((r) => r.json())
-        .then((s) => s.dob && setDob(s.dob))
-        .catch(() => {});
-    }
-  }, [initialDob]);
 
   const filtered = useMemo(
     () =>

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext } from "react";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import { getOtisAge, getOtisAgeShort } from "@/lib/otis-age";
 
 type OtisContextValue = {
@@ -11,36 +12,27 @@ type OtisContextValue = {
 };
 
 const OtisContext = createContext<OtisContextValue>({
-  dob: "",
-  loading: true,
+  dob: OTIS_DOB,
+  loading: false,
   getAge: () => "",
   getAgeShort: () => "",
 });
 
 export function OtisProvider({ children }: { children: React.ReactNode }) {
-  const [dob, setDob] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/otis/settings")
-      .then((r) => r.json())
-      .then((s) => setDob(s.dob ?? ""))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
   const getAge = useCallback(
-    (atDate: string) => (dob ? getOtisAge(dob, atDate) : ""),
-    [dob]
+    (atDate: string) => getOtisAge(OTIS_DOB, atDate),
+    []
   );
 
   const getAgeShort = useCallback(
-    (atDate: string) => (dob ? getOtisAgeShort(dob, atDate) : ""),
-    [dob]
+    (atDate: string) => getOtisAgeShort(OTIS_DOB, atDate),
+    []
   );
 
   return (
-    <OtisContext.Provider value={{ dob, loading, getAge, getAgeShort }}>
+    <OtisContext.Provider
+      value={{ dob: OTIS_DOB, loading: false, getAge, getAgeShort }}
+    >
       {children}
     </OtisContext.Provider>
   );

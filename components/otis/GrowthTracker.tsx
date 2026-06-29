@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { calculateAge } from "@/lib/age-utils";
+import { OTIS_DOB } from "@/lib/otis-constants";
 import type { GrowthEntry } from "@/types/otis";
 import { AdminOnly, useIsAdmin } from "./AdminGate";
 import { showToast } from "./Toast";
@@ -23,7 +24,7 @@ export default function GrowthTracker({
 }: GrowthTrackerProps) {
   const isAdmin = useIsAdmin();
   const [entries, setEntries] = useState<GrowthEntry[]>(initialEntries);
-  const [dob, setDob] = useState(initialDob ?? "");
+  const [dob] = useState(initialDob ?? OTIS_DOB);
   const [showModal, setShowModal] = useState(false);
   const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
 
@@ -35,15 +36,6 @@ export default function GrowthTracker({
       /* ignore */
     }
   }, []);
-
-  useEffect(() => {
-    if (!initialDob) {
-      fetch("/api/otis/settings")
-        .then((r) => r.json())
-        .then((s) => s.dob && setDob(s.dob))
-        .catch(() => {});
-    }
-  }, [initialDob]);
 
   const sorted = useMemo(
     () => [...entries].sort((a, b) => a.measured_date.localeCompare(b.measured_date)),
