@@ -5,6 +5,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import L from "leaflet";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { spreadMapMarkers } from "@/lib/spread-map-markers";
 import { getTimezoneCityLabel } from "@/lib/timezones";
 import type { FamilyLocation } from "@/types/otis";
 
@@ -64,7 +65,13 @@ interface WhereMapInnerProps {
 
 export default function WhereMapInner({ locations, home }: WhereMapInnerProps) {
   const mappable = useMemo(
-    () => locations.filter((m) => m.lat != null && m.lng != null),
+    () =>
+      spreadMapMarkers(
+        locations.filter(
+          (m): m is FamilyLocation & { lat: number; lng: number } =>
+            m.lat != null && m.lng != null
+        )
+      ),
     [locations]
   );
 
@@ -104,7 +111,7 @@ export default function WhereMapInner({ locations, home }: WhereMapInnerProps) {
         {mappable.map((member) => (
           <Marker
             key={member.id}
-            position={[member.lat!, member.lng!]}
+            position={[member.mapLat, member.mapLng]}
             icon={createMemberIcon(member)}
           >
             <Popup>
@@ -125,7 +132,7 @@ export default function WhereMapInner({ locations, home }: WhereMapInnerProps) {
             <Polyline
               key={`line-${member.id}`}
               positions={[
-                [member.lat!, member.lng!],
+                [member.lat, member.lng],
                 [home.lat, home.lng],
               ]}
               pathOptions={{

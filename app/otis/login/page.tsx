@@ -20,11 +20,11 @@ export default function FamilyLoginPage() {
       const res = await fetch("/api/otis/family/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
       const data = await res.json();
 
-      if (data.success) {
+      if (res.ok && data.success) {
         router.push("/otis");
       } else {
         setError(true);
@@ -62,8 +62,10 @@ export default function FamilyLoginPage() {
         <input
           type="text"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Your name..."
+          onChange={(e) => setUsername(e.target.value.trimStart())}
+          placeholder="Username (e.g. dad, granny)"
+          autoCapitalize="none"
+          autoCorrect="off"
           className="mt-8 w-full min-h-[48px] rounded border border-kraft bg-cream px-3 font-nunito"
           autoFocus
           required
@@ -80,7 +82,8 @@ export default function FamilyLoginPage() {
 
         {error && (
           <p className="mt-3 font-caveat text-lg text-coral">
-            Hmm, that doesn&apos;t look right! Try again 🙈
+            Hmm, that doesn&apos;t look right! Use your <strong>username</strong> (not display
+            name) and check the password 🙈
           </p>
         )}
 
@@ -93,7 +96,8 @@ export default function FamilyLoginPage() {
         </button>
 
         <p className="mt-4 font-caveat text-sm text-navy/50">
-          Need access? Ask Dad or Mum 😊
+          Log in with your username — e.g. <strong>dad</strong>, not your display name. Ask Dad or
+          Mum if unsure 😊
         </p>
       </form>
     </main>

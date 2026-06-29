@@ -477,12 +477,15 @@ function MemberModal({
               required
             />
             <input
-              placeholder="Username"
+              placeholder="Login username (what they type to sign in)"
               value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="mb-3 w-full rounded border border-kraft bg-cream px-3 font-nunito"
+              onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase() })}
+              className="mb-1 w-full rounded border border-kraft bg-cream px-3 py-2 font-nunito"
               required
             />
+            <p className="mb-3 font-caveat text-xs text-navy/50">
+              Share this username + password — not their display name
+            </p>
             <input
               placeholder="Relationship"
               value={form.relationship}

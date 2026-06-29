@@ -5,6 +5,7 @@ import { format, parseISO } from "date-fns";
 import L from "leaflet";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { spreadMapMarkers } from "@/lib/spread-map-markers";
 import type { FamilyMember } from "@/types/otis";
 
 function createMemberIcon(member: FamilyMember) {
@@ -50,7 +51,13 @@ export default function FamilyMapInner() {
     });
   }, []);
 
-  const mappable = members.filter((m) => m.lat != null && m.lng != null);
+  const mappable = useMemo(() => {
+    const withCoords = members.filter(
+      (m): m is FamilyMember & { lat: number; lng: number } =>
+        m.lat != null && m.lng != null
+    );
+    return spreadMapMarkers(withCoords);
+  }, [members]);
 
   const stats = useMemo(() => {
     const locations = new Set(mappable.map((m) => m.location).filter(Boolean));
@@ -65,7 +72,7 @@ export default function FamilyMapInner() {
     );
   }
 
-  const center = home ?? { lat: mappable[0]!.lat!, lng: mappable[0]!.lng! };
+  const center = home ?? { lat: mappable[0]!.lat, lng: mappable[0]!.lng };
 
   return (
     <div>
@@ -87,7 +94,7 @@ export default function FamilyMapInner() {
           {mappable.map((member) => (
             <Marker
               key={member.id}
-              position={[member.lat!, member.lng!]}
+              position={[member.mapLat, member.mapLng]}
               icon={createMemberIcon(member)}
             >
               <Popup>
@@ -111,7 +118,7 @@ export default function FamilyMapInner() {
               <Polyline
                 key={`line-${member.id}`}
                 positions={[
-                  [member.lat!, member.lng!],
+                  [member.lat, member.lng],
                   [home.lat, home.lng],
                 ]}
                 pathOptions={{
