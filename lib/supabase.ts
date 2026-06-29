@@ -5,7 +5,7 @@ function getPublicCredentials() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     throw new Error(
-      "Missing Supabase credentials. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local"
+      "Missing Supabase credentials. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local (or Vercel Environment Variables)."
     );
   }
   return { url, key };
@@ -37,7 +37,7 @@ function createAdminClient(): SupabaseClient {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) {
     throw new Error(
-      "Missing SUPABASE_SERVICE_ROLE_KEY. Add it to .env.local for admin writes (photo upload, etc.)."
+      "Missing SUPABASE_SERVICE_ROLE_KEY. Add it to .env.local or Vercel Environment Variables for admin writes."
     );
   }
   return createClient(url, serviceKey, {

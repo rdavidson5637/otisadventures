@@ -6,6 +6,9 @@ import OtisGlobalNav from "@/components/otis/OtisGlobalNav";
 import Toast from "@/components/otis/Toast";
 import { OtisProvider } from "@/lib/otis-context";
 
+// Server-render at request time — needs Supabase env vars (Vercel project settings).
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Otis' Adventures",
   description: "A private family scrapbook — Otis' adventures around the world.",
