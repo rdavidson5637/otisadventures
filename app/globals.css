@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fdf6e3;
+  --color-kraft: #e8d5a3;
+  --color-navy: #1e2d4a;
+  --color-green: #4a7c59;
+  --color-coral: #d4614e;
+  --color-yellow: #f5c842;
+  --color-blue: #5b8db8;
+  --color-purple: #8b6ba8;
+  --color-cork: #c8b99a;
+  --font-caveat: var(--font-caveat), cursive;
+  --font-nunito: var(--font-nunito), sans-serif;
+}
+
+:root {
+  --cream: #fdf6e3;
+  --kraft: #e8d5a3;
+  --navy: #1e2d4a;
+  --green: #4a7c59;
+  --coral: #d4614e;
+  --yellow: #f5c842;
+  --blue: #5b8db8;
+  --purple: #8b6ba8;
+}
+
+body {
+  color: var(--navy);
+}
+
+/* PWA — prevent bounce scroll on iOS, feel more native */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area padding utilities */
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Prevent text selection on tap for interactive elements */
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes install-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes install-slide-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes install-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-install-slide-up {
+  animation: install-slide-up 300ms ease forwards;
+}
+
+.animate-install-slide-down {
+  animation: install-slide-down 200ms ease forwards;
+}
+
+.animate-install-bounce {
+  animation: install-bounce 1.5s infinite;
+}
+
+.corkboard-bg {
+  background-color: #c8b99a;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8a98a' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.scrapbook-card {
+  background: #fdf6e3;
+  border-radius: 4px;
+  box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.22);
+}
+
+.washi-tape {
+  position: absolute;
+  top: -10px;
+  height: 22px;
+  width: 70px;
+  border-radius: 2px;
+  transform: rotate(-1deg);
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 20mm;
+    size: A4;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    page-break-after: always;
+  }
+}
