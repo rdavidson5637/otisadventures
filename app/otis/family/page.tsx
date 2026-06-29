@@ -6,7 +6,7 @@ export default function FamilyPage() {
     <main className="mx-auto max-w-6xl px-4 py-12">
       <header className="mb-10 text-center">
         <h1 className="font-caveat text-5xl font-bold text-navy md:text-6xl">
-          The Davidson Family 💛
+          The Otis Family 💛
         </h1>
         <p className="mt-3 font-caveat text-xl text-navy/60 md:text-2xl">
           What everyone&apos;s up to — all in one place
