@@ -9,7 +9,7 @@ config({ path: ".env.local" });
 const TRIP = {
   name: "Northern Ireland 2026",
   description:
-    "Otis' first big adventure — exploring the very best of Northern Ireland",
+    "Exploring the very best of Northern Ireland",
   cover_emoji: "🍀",
   start_date: "2026-07-10",
   end_date: "2026-07-23",
