@@ -1,0 +1,16 @@
+# ⚠️ LOCAL ONLY — DO NOT COMMIT OR PUSH
+
+This file marks the project root for private local files.
+
+The following must **never** be pushed to GitHub:
+
+- `.env.local` — Supabase keys and passwords
+- `README.md` — private setup & login guide for the family
+
+They are listed in `.gitignore`. If you ever accidentally stage them, run:
+
+```bash
+git rm --cached .env.local README.md
+```
+
+Only `.env.local.example` (no real secrets) is safe to commit.
